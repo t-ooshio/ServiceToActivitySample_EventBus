@@ -20,6 +20,12 @@ import android.view.View;
 import android.widget.Button;
 import android.os.Handler;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import jp.sio.sample.servicetoactivitysample.MyService;
+import jp.sio.sample.servicetoactivitysample.R;
+
 public class MainActivity extends AppCompatActivity {
 
     private final FooReciever receiver = new FooReciever();
@@ -47,14 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent foo_intent = new Intent(this,MyService.class);
 
-        int num;
-        num = 1;
-        switch(num){
-            case 1:
-                if(D) Log.d("switch","1");
-            default:
-                if(D) Log.d("switch","default");
-        }
         //ボタンを押して別スレッドで処理を開始
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +73,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onStart(){
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop(){
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+    //This method will be called when a MessageEvent is posted
+    @Subscribe
+    public void onMessageEvent(MessageEvent event){
+        Log.d("ServicetoActivity",event.message);
+    }
+
 
     //Intentを受け取ったときの処理を記述
     public class FooReciever extends BroadcastReceiver {
@@ -86,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     //TODO:実行する処理を書く
-
                     if(D) Log.d("TEST","Recieve");
                 }
             }).start();

@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 public class MyService extends Service {
     public MyService() {
 
@@ -46,6 +48,9 @@ public class MyService extends Service {
         int getnum = intent.getIntExtra("num",1);
 
         Log.d("TestService","mStart");
+
+        EventBus.getDefault().post(new MessageEvent("Hello,EventBus!"));
+
         switch(getnum){
             case SUCCESS_NUM:
                 sendBroadcast(new  Intent(SUCCESS));
